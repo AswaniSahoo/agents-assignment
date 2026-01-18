@@ -71,8 +71,48 @@ This directory contains a comprehensive collection of voice-based agent examples
 - [`error_callback.py`](./error_callback.py) - Error handling callback
 - [`session_close_callback.py`](./session_close_callback.py) - Session lifecycle management
 
+### 🎯 Intelligent Interruption Handler
+
+Context-aware backchannel filtering that distinguishes between passive acknowledgements ("yeah", "ok", "hmm") and active interruptions ("stop", "wait", "no").
+
+**Module:** [`interrupt_handler/`](./interrupt_handler/)
+- [`config.py`](./interrupt_handler/config.py) - Configurable word lists for ignore/interrupt
+- [`detector.py`](./interrupt_handler/detector.py) - Core backchannel detection logic
+- [`handler.py`](./interrupt_handler/handler.py) - Stateful handler for agent integration
+
+**Demo Agents:**
+- [`backchannel_agent.py`](./backchannel_agent.py) - Full demo with counting exercise
+- [`backchannel_demo_agent.py`](./backchannel_demo_agent.py) - Simplified demo agent
+
+**Testing:**
+- [`test_backchannel.py`](./test_backchannel.py) - Unit tests for detection logic
+
+#### Logic Matrix
+
+| User Input | Agent State | Behavior |
+|------------|-------------|----------|
+| "Yeah / Ok / Hmm" | Speaking | **IGNORE** - Continue speaking |
+| "Stop / Wait / No" | Speaking | **INTERRUPT** - Stop and listen |
+| "Yeah / Ok / Hmm" | Silent | **RESPOND** - Process as valid input |
+
+#### Quick Start
+
+```bash
+# Run unit tests
+python test_backchannel.py
+
+# Run demo agent (terminal mode)
+python backchannel_agent.py console
+
+# Run demo agent (connect to LiveKit)
+python backchannel_agent.py dev
+```
+
+See [`interrupt_handler/README.md`](./interrupt_handler/README.md) for full documentation.
+
 ## 📖 Additional Resources
 
 - [LiveKit Agents Documentation](https://docs.livekit.io/agents/)
 - [Agents Starter Example](https://github.com/livekit-examples/agent-starter-python)
 - [More Agents Examples](https://github.com/livekit-examples/python-agents-examples)
+

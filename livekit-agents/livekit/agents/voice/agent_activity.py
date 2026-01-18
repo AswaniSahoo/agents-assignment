@@ -40,6 +40,14 @@ from ..tokenize.basic import split_words
 from ..types import NOT_GIVEN, FlushSentinel, NotGivenOr
 from ..utils.misc import is_given
 from ._utils import _set_participant_attributes
+
+# Backchannel filtering imports - Intelligent Interruption Handling
+import sys
+import os
+# Add the examples path to allow importing the interrupt_handler module
+_examples_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "..", "examples", "voice_agents")
+if _examples_path not in sys.path:
+    sys.path.insert(0, os.path.abspath(_examples_path))
 from .agent import (
     Agent,
     ModelSettings,
@@ -1378,6 +1386,30 @@ class AgentActivity(RecognitionHooks):
             self._cancel_preemptive_generation()
             # avoid interruption if the new_transcript is too short
             return False
+
+        # ===== BACKCHANNEL FILTERING - Intelligent Interruption Handling =====
+        # Check if the transcript is a backchannel (yeah, ok, hmm, etc.)
+        # If agent is speaking and user only said backchannel words, IGNORE
+        if (
+            self._current_speech is not None
+            and self._current_speech.allow_interruptions
+            and not self._current_speech.interrupted
+            and self._session.agent_state == "speaking"
+        ):
+            try:
+                from interrupt_handler import get_global_detector
+                detector = get_global_detector()
+                if detector.should_ignore(info.new_transcript, agent_speaking=True):
+                    self._cancel_preemptive_generation()
+                    logger.info(
+                        "Ignoring backchannel while speaking",
+                        extra={"user_input": info.new_transcript},
+                    )
+                    return False
+            except ImportError:
+                # interrupt_handler module not available, continue normally
+                pass
+        # ===== END BACKCHANNEL FILTERING =====
 
         old_task = self._user_turn_completed_atask
         self._user_turn_completed_atask = self._create_speech_task(
