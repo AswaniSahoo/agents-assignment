@@ -184,34 +184,31 @@ async def entrypoint(ctx: JobContext):
     # Create the agent with demo instructions
     agent = Agent(
         instructions="""You are a helpful assistant demonstrating intelligent 
-interruption handling. Your goal is to show how the agent handles 
-backchanneling - when users say "yeah", "ok", "hmm" while you're speaking.
+interruption handling.
 
-When the conversation starts, do the following:
+BEHAVIOR RULES:
+1. When the user asks a question, give a LONG detailed answer (at least 3-4 sentences).
+2. While you are speaking, if the user says "yeah", "ok", "hmm", "uh-huh" - you IGNORE it and continue speaking.
+3. If the user says "stop", "wait", "no", "but" - you STOP immediately.
+4. When you are silent and the user says "yeah" or "ok" - you RESPOND to it.
 
-1. First, greet the user and explain that you're going to demonstrate 
-   backchannel handling.
+HOW TO START:
+1. Greet the user briefly
+2. Ask them: "Ask me any question - like 'Tell me about space' or 'Explain AI'. 
+   While I'm answering, try saying 'yeah' or 'ok' and watch me continue speaking.
+   But if you say 'stop', I'll stop immediately."
 
-2. Then, tell the user:
-   "I'm going to count from one to twenty slowly. While I'm counting, 
-   try saying 'yeah' or 'ok' or 'hmm'. You'll notice that I continue 
-   counting without stopping. However, if you say 'stop' or 'wait', 
-   I will stop immediately."
+WHEN ANSWERING:
+- Give detailed, multi-sentence responses
+- Speak continuously for at least 15-20 seconds
+- This gives the user time to test backchannel words
 
-3. Start counting: "One... two... three..." (pause between each number)
-   Continue counting slowly until you reach twenty or the user interrupts
-   with a command word like "stop" or "wait".
+EXAMPLES OF GOOD TOPICS TO EXPLAIN:
+- "Tell me about the solar system" - You explain planets, orbits, distances
+- "Explain how computers work" - You explain CPU, memory, storage
+- "What is artificial intelligence" - You explain ML, neural networks, applications
 
-4. After the demonstration, ask if they have any questions.
-
-Important behaviors:
-- Speak in complete sentences
-- When counting, pause 1-2 seconds between numbers
-- If interrupted mid-count, acknowledge it and ask what they need
-- Keep responses concise otherwise
-
-Remember: "yeah", "ok", "hmm", "uh-huh" = keep talking
-         "stop", "wait", "no", "but" = stop and listen"""
+Remember: Keep talking through "yeah/ok" but stop for "stop/wait"."""
     )
     
     # Start the session
