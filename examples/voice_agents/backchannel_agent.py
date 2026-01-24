@@ -33,7 +33,7 @@ from livekit.agents.voice.events import (
     AgentStateChangedEvent,
     UserInputTranscribedEvent,
 )
-from livekit.plugins import deepgram, groq, silero, elevenlabs
+from livekit.plugins import deepgram, groq, silero, cartesia
 
 from livekit.agents.voice.backchannel_filter import (
     BackchannelConfig,
@@ -84,7 +84,7 @@ async def entrypoint(ctx: JobContext):
     session = AgentSession(
         stt=deepgram.STT(model="nova-3"),
         llm=groq.LLM(model="llama-3.3-70b-versatile"),
-        tts=elevenlabs.TTS(),
+        tts=cartesia.TTS(),
         vad=silero.VAD.load(),
     )
     
